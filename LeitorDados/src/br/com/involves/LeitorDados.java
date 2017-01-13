@@ -1,5 +1,7 @@
 package br.com.involves;
 
+import br.com.involves.Exceptions.LoaderException;
+import br.com.involves.Exceptions.OperacaoNaoEncontradaException;
 import br.com.involves.menu.MenuConsole;
 import br.com.involves.modelo.dados.Dados;
 import br.com.involves.modelo.loader.ILoader;
@@ -21,7 +23,7 @@ public class LeitorDados {
 				ILoader loader = new LoaderCSV();
 				try {
 					loader.carregarInformacoes();
-				} catch (ArquivoCSVException e) {
+				} catch (LoaderException e) {
 					continue;
 				}
 			}

@@ -1,4 +1,4 @@
-package br.com.involves;
+package br.com.involves.Exceptions;
 
 
 import br.com.involves.menu.MenuConsole;

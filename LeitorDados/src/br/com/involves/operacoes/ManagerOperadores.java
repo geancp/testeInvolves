@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import br.com.involves.OperacaoNaoEncontradaException;
+import br.com.involves.Exceptions.OperacaoNaoEncontradaException;
 import br.com.involves.menu.MenuConsole;
 
 public class ManagerOperadores {

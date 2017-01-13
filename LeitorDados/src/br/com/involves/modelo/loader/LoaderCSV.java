@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import br.com.involves.ArquivoCSVException;
+import br.com.involves.Exceptions.ArquivoCSVException;
+import br.com.involves.Exceptions.LoaderException;
 import br.com.involves.menu.MenuConsole;
 import br.com.involves.modelo.Coluna;
 import br.com.involves.modelo.DadoEntity;
@@ -20,10 +21,15 @@ public class LoaderCSV implements ILoader{
 	private String delimitador = ",";
 
 	@Override
-	public void carregarInformacoes() throws ArquivoCSVException {
+	public void carregarInformacoes() throws LoaderException {
 		Path arquivo = this.carregarArquivo();
 		this.determinarDelimitador();
-		this.lerInformacoesArquivo(arquivo);
+
+		try {
+			this.lerInformacoesArquivo(arquivo);
+		} catch (ArquivoCSVException e) {
+			throw new LoaderException(e);
+		}
 	}
 
 	private Path carregarArquivo() {
@@ -61,7 +67,7 @@ public class LoaderCSV implements ILoader{
 			this.leDadosArquivo(linhas);
 
 		} catch (IOException e) {
-			MenuConsole.exibeErro(new ArquivoCSVException("Erro ao ler o arquivo na linha número.", e));
+			MenuConsole.exibeErro(new ArquivoCSVException("Erro ao ler o arquivo.", e));
 		} catch (SecurityException e) {
 			MenuConsole.exibeErro(new ArquivoCSVException("Voce não tem permissão para ler o arquivo.", e));
 		}

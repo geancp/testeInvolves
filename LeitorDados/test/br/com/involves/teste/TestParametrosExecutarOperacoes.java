@@ -17,17 +17,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import br.com.involves.OperacaoNaoEncontradaException;
+import br.com.involves.Exceptions.OperacaoNaoEncontradaException;
 import br.com.involves.operacoes.ManagerOperadores;
 
-public class TestParametrosExecutarOperacaoCountAll {
+public class TestParametrosExecutarOperacoes {
+
+	private static final String ARQUIVO_CVS = "CountAll.csv";
 
 	@Rule
 	public TemporaryFolder pastaTemp = new TemporaryFolder();
 
 	private final ByteArrayOutputStream systemOut = new ByteArrayOutputStream();
 
-	private static final String ARQUIVO_CVS = "CountAll.csv";
 	private File arquivo;
 
 	@Before
@@ -58,7 +59,7 @@ public class TestParametrosExecutarOperacaoCountAll {
 
 	@After
 	public void tearDown() {
-		// Limpando sa saida do System.out
+		// Limpando a saida do System.out
 		System.setOut(null);
 
 		if (this.arquivo.exists()) {
@@ -86,6 +87,64 @@ public class TestParametrosExecutarOperacaoCountAll {
 		} catch (OperacaoNaoEncontradaException e) {
 			throw new Exception(e);
 		}
-		Assert.assertTrue(systemOut.toString().startsWith("O número de total registros é de: 8"));
+		Assert.assertEquals("O número de total registros é de: 8\r\n", systemOut.toString());
+	}
+
+	@Test
+	public void countDistinct() throws Exception {
+
+		leArquivoDeTeste();
+
+		try {
+			ManagerOperadores.getInstance().executaOperacao("COUNT DISTINCT Estado");
+		} catch (OperacaoNaoEncontradaException e) {
+			throw new Exception(e);
+		}
+
+		StringBuilder resultado = new StringBuilder();
+		resultado.append("O número de total registros agrupados é:\r\n");
+		resultado.append("Valor : SC Total : 3\r\n");
+		resultado.append("Valor : PR Total : 2\r\n");
+		resultado.append("Valor : RJ Total : 1\r\n");
+		resultado.append("Valor : PI Total : 1\r\n");
+		resultado.append("Valor : SP Total : 1\r\n");
+
+		Assert.assertEquals(resultado.toString(), systemOut.toString());
+	}
+
+	@Test
+	public void filtrar() throws Exception {
+
+		leArquivoDeTeste();
+
+		try {
+			ManagerOperadores.getInstance().executaOperacao("FILTER Estado SC");
+		} catch (OperacaoNaoEncontradaException e) {
+			throw new Exception(e);
+		}
+
+		StringBuilder resultado = new StringBuilder();
+		resultado.append("Estado,  Cidade,  polulacao\r\n");
+		resultado.append("SC,  Laguna,  100000\r\n");
+		resultado.append("SC,  Joinville,  400000\r\n");
+		resultado.append("SC,  Blumenau,  200000\r\n");
+
+		Assert.assertEquals(resultado.toString(), systemOut.toString());
+	}
+
+
+	private void leArquivoDeTeste() throws Exception {
+		try {
+			Class<?> cls = Class.forName("br.com.involves.modelo.loader.LoaderCSV");
+			Object instancia = cls.newInstance();
+
+			Method method = cls.getDeclaredMethod("lerInformacoesArquivo", Path.class);
+			method.setAccessible(true);
+			method.invoke(instancia, Paths.get(this.arquivo.getPath()));
+
+		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | InstantiationException e) {
+			throw new Exception(e);
+		}
 	}
 }

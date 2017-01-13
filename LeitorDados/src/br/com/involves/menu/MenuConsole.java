@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import br.com.involves.ConsoleException;
+import br.com.involves.Exceptions.ConsoleException;
 import br.com.involves.operacoes.ManagerOperadores;
 
 public class MenuConsole {
